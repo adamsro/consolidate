@@ -46,5 +46,11 @@ public class AppTest
         String test2Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test2-output.json")));
         app2.jsonToStorage(test2In);
         assertTrue(test2Out.equals(app2.storageToJson()));
+
+        App app3 = new App();
+        FileReader test3In = new FileReader("src/test/resources/test3-input.json");
+        String test3Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test3-output.json")));
+        app3.jsonToStorage(test3In);
+        assertTrue(test3Out.equals(app3.storageToJson()));
     }
 }

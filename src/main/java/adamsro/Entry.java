@@ -1,6 +1,6 @@
 package adamsro;
 
-import java.time.*;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
 /**
@@ -13,7 +13,6 @@ public class Entry implements Comparable {
     private String lastName;
     private String address;
     private String entryDate;
-    private ZonedDateTime entryDateObj;
 
     public Entry() {
     }
@@ -62,9 +61,8 @@ public class Entry implements Comparable {
         return entryDate;
     }
 
-    public void setEntryDate(String entryDate) throws DateTimeParseException {
+    public void setEntryDate(String entryDate) {
         this.entryDate = entryDate;
-        this.entryDateObj = ZonedDateTime.parse(entryDate);
     }
 
     @Override
@@ -82,7 +80,9 @@ public class Entry implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return this.entryDate.compareTo(((Entry) o).getEntryDate());
+    public int compareTo(Object o) throws DateTimeParseException  {
+        ZonedDateTime thisDate = ZonedDateTime.parse(this.entryDate);
+        ZonedDateTime thatDate = ZonedDateTime.parse(((Entry) o).getEntryDate());
+        return thisDate.compareTo(thatDate);
     }
 }
