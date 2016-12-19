@@ -80,7 +80,7 @@ public class Entry implements MultiKey {
     }
 
     @Override
-    public int compareTo(Object o) throws DateTimeParseException  {
+    public int compareTo(Object o) throws DateTimeParseException {
         ZonedDateTime thisDate = ZonedDateTime.parse(this.entryDate);
         ZonedDateTime thatDate = ZonedDateTime.parse(((Entry) o).getEntryDate());
         return thisDate.compareTo(thatDate);
