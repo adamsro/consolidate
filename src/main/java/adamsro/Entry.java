@@ -6,7 +6,7 @@ import java.time.format.DateTimeParseException;
 /**
  * Created by adamsro on 12/18/16.
  */
-public class Entry implements Comparable {
+public class Entry implements MultiKey {
     private String _id;
     private String email;
     private String firstName;
@@ -84,5 +84,15 @@ public class Entry implements Comparable {
         ZonedDateTime thisDate = ZonedDateTime.parse(this.entryDate);
         ZonedDateTime thatDate = ZonedDateTime.parse(((Entry) o).getEntryDate());
         return thisDate.compareTo(thatDate);
+    }
+
+    @Override
+    public String getKey1() {
+        return _id;
+    }
+
+    @Override
+    public Object getKey2() {
+        return email;
     }
 }
