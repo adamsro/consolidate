@@ -14,7 +14,22 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * Hello world!
+ * Accept file path as argument. File must be JSON which structure like the following:
+ * {
+ * "leads": [
+ * {
+ * "_id": "",
+ * "email": "",
+ * "firstName": "",
+ * "lastName": "",
+ * "address": "",
+ * "entryDate": "ISO 8601 formatted date"
+ * },
+ *
+ * Program assumes data is to be processed sequentially from first entry in file to last, e.g.
+ * {A, B}, {C, B}, {A, D} => {C, B},{A, D}
+ *
+ * Created by Robert 'Marshall' Adams on 12/18/16.`
  */
 public class App {
 
@@ -38,6 +53,11 @@ public class App {
         System.out.println(app.storageToJson());
     }
 
+    /**
+     * Load all JSON entries into a storage mechanism as defined by `MultiKeySet`.
+     *
+     * @param in An InputStream to be read by JsonReader
+     */
     public void jsonToStorage(InputStreamReader in) throws Exception {
         JsonReader reader = new JsonReader(in);
         Gson gson = new GsonBuilder().create();
@@ -62,6 +82,11 @@ public class App {
         reader.close();
     }
 
+    /**
+     * Retrieve all data from storage mechanism as JSON.
+     *
+     * @return JSON string with entries in leads array
+     */
     public String storageToJson() throws Exception {
         Map<String, Collection<Entry>> leads = new HashMap<>();
         leads.put("leads", DATA.values());
@@ -69,7 +94,9 @@ public class App {
     }
 
     /**
-     * {@see http://codereview.stackexchange.com/questions/27148/tips-on-multiple-key-map-wrapper}
+     * Interface which forces both key1 and key2 to be unique in set on initial insert.
+     * Implementation uses a HashMap for each key which points to the stored object. O(1) runtime.
+     * Added as subclass for readability in this example.
      */
     public class MultiKeySet<K1, K2, V extends MultiKey> {
         private final HashMap<K1, V> map1 = new HashMap<>();

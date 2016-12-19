@@ -4,7 +4,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
 /**
- * Created by adamsro on 12/18/16.
+ * Object maps to JSON object in leads array.
+ *
+ * Created by Robert 'Marshall' Adams on 12/18/16.
  */
 public class Entry implements MultiKey {
     private String _id;
