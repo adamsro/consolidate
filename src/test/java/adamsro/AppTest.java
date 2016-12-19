@@ -4,11 +4,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import java.io.FileReader;
 
-import java.io.File;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Unit test for simple App.
@@ -35,9 +34,17 @@ public class AppTest
      * Rigourous Test :-)
      */
     public void testApp() throws Exception {
-        File test1In = new File("src/test/resources/test1-input.json");
-        File test1Out = new File("src/test/resources/test1-output.json");
-        //TODO write real test
-        assertTrue(FileUtils.contentEquals(test1In, test1In));
+
+        App app1 = new App();
+        FileReader test1In = new FileReader("src/test/resources/test1-input.json");
+        String test1Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test1-output.json")));
+        app1.jsonToStorage(test1In);
+        assertTrue(test1Out.equals(app1.storageToJson()));
+
+        App app2 = new App();
+        FileReader test2In = new FileReader("src/test/resources/test2-input.json");
+        String test2Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test2-output.json")));
+        app2.jsonToStorage(test2In);
+        assertTrue(test2Out.equals(app2.storageToJson()));
     }
 }
