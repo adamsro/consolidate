@@ -51,7 +51,12 @@ public class App {
             Entry oldEntry = DATA.add(newEntry.get_id(), newEntry.getEmail(), newEntry);
             if (oldEntry != null) {
                 // A replacement was made
-                LOGGER.info(String.format("Replaced entry: %s with entry: %s", newEntry, oldEntry));
+                LOGGER.info(String.format(
+                        "Fields updated for entry with id %s: %s => %s",
+                        oldEntry.get_id(),
+                        newEntry,
+                        oldEntry
+                ));
             }
         }
         reader.close();
