@@ -11,13 +11,14 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Hello world!
  */
 public class App {
 
-//    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
     private final MultiKeySet<String, String, Entry> DATA = new MultiKeySet<>();
 
@@ -46,8 +47,12 @@ public class App {
         reader.beginArray(); // Consume `leads` array character.
 
         while (reader.hasNext()) {
-            Entry e = gson.fromJson(reader, Entry.class);
-            DATA.add(e.get_id(), e.getEmail(), e);
+            Entry newEntry = gson.fromJson(reader, Entry.class);
+            Entry oldEntry = DATA.add(newEntry.get_id(), newEntry.getEmail(), newEntry);
+            if (oldEntry != null) {
+                // A replacement was made
+                LOGGER.info(String.format("Replaced entry: %s with entry: %s", newEntry, oldEntry));
+            }
         }
         reader.close();
     }

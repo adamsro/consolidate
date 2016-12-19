@@ -95,4 +95,10 @@ public class Entry implements MultiKey {
     public Object getKey2() {
         return email;
     }
+
+    @Override
+    public String toString() {
+        return "{id: " + _id + ", email: " + email + ", firstName: " + firstName + ", lastName: "
+                + lastName + ", address: " + address + ", entryDate: " + entryDate + "}";
+    }
 }
