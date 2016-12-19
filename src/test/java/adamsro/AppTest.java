@@ -1,13 +1,19 @@
 package adamsro;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.FileReader;
 
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import jdk.nashorn.api.scripting.JSObject;
 
 /**
  * Unit test for simple App.
@@ -31,26 +37,54 @@ public class AppTest
     }
 
     /**
-     * Rigourous Test :-)
+     * Given test data
      */
-    public void testApp() throws Exception {
+    public void testApp1() throws Exception {
+        App app = new App();
+        FileReader testIn = new FileReader("src/test/resources/test1-input.json");
+        String testExpected = new String(Files.readAllBytes(Paths.get("src/test/resources/test1-output.json")));
 
-        App app1 = new App();
-        FileReader test1In = new FileReader("src/test/resources/test1-input.json");
-        String test1Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test1-output.json")));
-        app1.jsonToStorage(test1In);
-        assertTrue(test1Out.equals(app1.storageToJson()));
+        app.jsonToStorage(testIn);
+        String testActual = app.storageToJson();
+        JsonObject expected = new Gson().fromJson(testExpected, JsonObject.class);
+        JsonObject actual = new Gson().fromJson(testActual, JsonObject.class);
 
-        App app2 = new App();
-        FileReader test2In = new FileReader("src/test/resources/test2-input.json");
-        String test2Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test2-output.json")));
-        app2.jsonToStorage(test2In);
-        assertTrue(test2Out.equals(app2.storageToJson()));
+        assertTrue(expected.equals(actual));
+    }
 
-        App app3 = new App();
-        FileReader test3In = new FileReader("src/test/resources/test3-input.json");
-        String test3Out = new String(Files.readAllBytes(Paths.get("src/test/resources/test3-output.json")));
-        app3.jsonToStorage(test3In);
-        assertTrue(test3Out.equals(app3.storageToJson()));
+    /**
+     * Test Data Sort on insertion
+     */
+    public void testApp2() throws Exception {
+        App app = new App();
+        FileReader testIn = new FileReader("src/test/resources/test2-input.json");
+        String testExpected = new String(Files.readAllBytes(Paths.get("src/test/resources/test2-output.json")));
+
+        app.jsonToStorage(testIn);
+        String testActual = app.storageToJson();
+        JsonObject expected = new Gson().fromJson(testExpected, JsonObject.class);
+        JsonObject actual = new Gson().fromJson(testActual, JsonObject.class);
+
+        assertTrue(expected.equals(actual));
+    }
+
+    /**
+     * Test for "If the dates are identical, the data from the record provided last in the list
+     * should be preferred"
+     *
+     *  TODO Test fails! Case exists where App prefers entry with matching `id` over last entry
+     *  parsed when entryDate is identical. Fix by assigning queue number when first inserted?
+     */
+    public void testApp3() throws Exception {
+        App app = new App();
+        FileReader testIn = new FileReader("src/test/resources/test3-input.json");
+        String testExpected = new String(Files.readAllBytes(Paths.get("src/test/resources/test3-output.json")));
+
+        app.jsonToStorage(testIn);
+        String testActual = app.storageToJson();
+        JsonObject expected = new Gson().fromJson(testExpected, JsonObject.class);
+        JsonObject actual = new Gson().fromJson(testActual, JsonObject.class);
+
+        assertTrue(expected.equals(actual));
     }
 }

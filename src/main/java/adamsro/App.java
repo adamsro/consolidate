@@ -78,19 +78,19 @@ public class App {
                 map2.put(key2, v);
                 return null;
             } else if ((e1 != null && e2 == null && v.compareTo(e1) >= 0)
-                    || (e1 != null && e2 != null && e1.compareTo(e2) >= 0 && v.compareTo(e1) >= 0)) {
+                    || (e1 != null && e2 != null && e2.compareTo(e1) <= 0 && e1.compareTo(v) <= 0)) {
                 // All cases of: e2 <= e1 <= v
-                V old = map2.remove(key2); // Replace smallest or oldest key.
+                V old = map1.remove(key1); // Replace smallest or oldest key.
                 // Use old key's secondary key to remove secondary map ref.
-                map1.remove(old.getKey1());
+                map2.remove(old.getKey2());
                 map1.put(key1, v);
                 map2.put(key2, v);
                 return old;
             } else if ((e1 == null && e2 != null && v.compareTo(e2) >= 0)
-                    || (e1 != null && e2 != null && e1.compareTo(e2) <= 0 && v.compareTo(e2) >= 0)) {
+                    || (e1 != null && e2 != null && e1.compareTo(e2) < 0 && e2.compareTo(v) <= 0)) {
                 // All cases of: e1 < e2 <= v
-                V old = map1.remove(key1);
-                map2.remove(old.getKey2());
+                V old = map2.remove(key2);
+                map1.remove(old.getKey1());
                 map1.put(key1, v);
                 map2.put(key2, v);
                 return old;
