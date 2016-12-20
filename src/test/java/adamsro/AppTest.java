@@ -71,9 +71,6 @@ public class AppTest
     /**
      * Test for "If the dates are identical, the data from the record provided last in the list
      * should be preferred"
-     *
-     * TODO Test fails! Case exists where App prefers entry with matching `id` over last entry
-     * parsed when entryDate is identical. Fix by assigning queue number when first inserted?
      */
     public void testApp3() throws Exception {
         App app = new App();
