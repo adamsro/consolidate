@@ -15,6 +15,7 @@ public class Entry implements MultiKey {
     private String lastName;
     private String address;
     private String entryDate;
+    private transient long queueNum;
 
     public Entry() {
     }
@@ -67,6 +68,14 @@ public class Entry implements MultiKey {
         this.entryDate = entryDate;
     }
 
+    public long getQueueNum() {
+        return queueNum;
+    }
+
+    public void setQueueNum(long queueNum) {
+        this.queueNum = queueNum;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -85,7 +94,12 @@ public class Entry implements MultiKey {
     public int compareTo(Object o) throws DateTimeParseException {
         ZonedDateTime thisDate = ZonedDateTime.parse(this.entryDate);
         ZonedDateTime thatDate = ZonedDateTime.parse(((Entry) o).getEntryDate());
-        return thisDate.compareTo(thatDate);
+        int dateCompare = thisDate.compareTo(thatDate);
+        if (dateCompare == 0) {
+            return queueNum > ((Entry) o).getQueueNum() ? 1 : -1;
+        } else {
+            return dateCompare;
+        }
     }
 
     @Override

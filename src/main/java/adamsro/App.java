@@ -8,8 +8,10 @@ import java.io.File;
 import java.io.FileReader;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,6 +31,8 @@ import java.util.logging.Logger;
  * Program assumes data is to be processed sequentially from first entry in file to last, e.g.
  * {A, B}, {C, B}, {A, D} => {C, B},{A, D}
  *
+ * Program uses hashmaps instead of loops for O(1) insert time.
+ *
  * Created by Robert 'Marshall' Adams on 12/18/16.`
  */
 public class App {
@@ -36,6 +40,12 @@ public class App {
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
     private final MultiKeySet<String, String, Entry> DATA = new MultiKeySet<>();
+
+    /**
+     * Limits max # of insertions to Long.MAX_VALUE (9223372036854775807) but this is required to
+     * check insertion order when `entryDate` is identical.
+     */
+    private long queueNum = 0;
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -68,14 +78,13 @@ public class App {
 
         while (reader.hasNext()) {
             Entry newEntry = gson.fromJson(reader, Entry.class);
-            Entry oldEntry = DATA.add(newEntry.get_id(), newEntry.getEmail(), newEntry);
-            if (oldEntry != null) {
+            newEntry.setQueueNum(queueNum++);
+            List<Entry> oldEntries = DATA.add(newEntry.get_id(), newEntry.getEmail(), newEntry);
+            for (Object oldEntry : oldEntries) {
                 // A replacement was made
                 LOGGER.info(String.format(
                         "Fields updated for entry with id %s: %s => %s",
-                        oldEntry.get_id(),
-                        newEntry,
-                        oldEntry
+                        ((Entry) oldEntry).get_id(), newEntry, oldEntry
                 ));
             }
         }
@@ -99,41 +108,52 @@ public class App {
      * Added as subclass for readability in this example.
      */
     public class MultiKeySet<K1, K2, V extends MultiKey> {
-        private final HashMap<K1, V> map1 = new HashMap<>();
-        private final HashMap<K2, V> map2 = new HashMap<>();
+        private HashMap<K1, V> map1 = new HashMap<>();
+        private HashMap<K2, V> map2 = new HashMap<>();
 
         public MultiKeySet() {
         }
 
-        public V add(K1 key1, K2 key2, V v) {
+        public List<V> add(K1 key1, K2 key2, V v) {
+            List<V> oldList = new ArrayList<>();
             V e1 = map1.get(key1);
             V e2 = map2.get(key2);
-
             if (e1 == null && e2 == null) {
                 // Value doesn't exist in the uniques collection.
-                map1.put(key1, v);
-                map2.put(key2, v);
-                return null;
-            } else if ((e1 != null && e2 == null && v.compareTo(e1) >= 0)
-                    || (e1 != null && e2 != null && e2.compareTo(e1) <= 0 && e1.compareTo(v) <= 0)) {
-                // All cases of: e2 <= e1 <= v
-                V old = map1.remove(key1); // Replace smallest or oldest key.
-                // Use old key's secondary key to remove secondary map ref.
-                map2.remove(old.getKey2());
-                map1.put(key1, v);
-                map2.put(key2, v);
-                return old;
-            } else if ((e1 == null && e2 != null && v.compareTo(e2) >= 0)
-                    || (e1 != null && e2 != null && e1.compareTo(e2) < 0 && e2.compareTo(v) <= 0)) {
-                // All cases of: e1 < e2 <= v
-                V old = map2.remove(key2);
-                map1.remove(old.getKey1());
-                map1.put(key1, v);
-                map2.put(key2, v);
-                return old;
+                put(key1, key2, v);
+            } else if (e1 != null && e2 == null && e1.compareTo(v) < 0) {
+                // null < e1 < v : Replace e1 with v
+                oldList.add(removeByKey1(key1));
+                put(key1, key2, v);
+            } else if (e1 == null && e2 != null && e2.compareTo(v) < 0) {
+                // null < e2 < v : replace e2 with v
+                oldList.add(removeByKey2(key2));
+                put(key1, key2, v);
+            } else if (e2.compareTo(v) < 0 && e1.compareTo(v) < 0) {
+                // (e1 && e2) < v : Replace e1 and e2 with v
+                oldList.add(removeByKey2(key2));
+                oldList.add(removeByKey1(key1));
+                put(key1, key2, v);
             }
             // All cases of: (e1 || e2) > v
-            return null;
+            return oldList;
+        }
+
+        private V removeByKey1(K1 key1) {
+            V old = map1.remove(key1);
+            map2.remove(old.getKey2());
+            return old;
+        }
+
+        private V removeByKey2(K2 key2) {
+            V old = map2.remove(key2);
+            map1.remove(old.getKey1());
+            return old;
+        }
+
+        private void put(K1 key1, K2 key2, V v) {
+            map1.put(key1, v);
+            map2.put(key2, v);
         }
 
         public Collection<V> values() {
