@@ -5,10 +5,10 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Object maps to JSON object in leads array.
- *
+ * <p>
  * Created by Robert 'Marshall' Adams on 12/18/16.
  */
-public class Entry implements MultiKey {
+public class Entry implements MultiKey<String, String> {
     private String _id;
     private String email;
     private String firstName;
@@ -18,6 +18,34 @@ public class Entry implements MultiKey {
     private transient long queueNum;
 
     public Entry() {
+    }
+
+    @Override
+    public String getKey1() {
+        return _id;
+    }
+
+    @Override
+    public void setKey1(String key1) {
+        _id = key1;
+    }
+
+    @Override
+    public String getKey2() {
+        return email;
+    }
+
+    @Override
+    public void setKey2(String key2) {
+        email = key2;
+    }
+
+    public long getQueueNum() {
+        return queueNum;
+    }
+
+    public void setQueueNum(long queueNum) {
+        this.queueNum = queueNum;
     }
 
     public String get_id() {
@@ -68,14 +96,6 @@ public class Entry implements MultiKey {
         this.entryDate = entryDate;
     }
 
-    public long getQueueNum() {
-        return queueNum;
-    }
-
-    public void setQueueNum(long queueNum) {
-        this.queueNum = queueNum;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -100,16 +120,6 @@ public class Entry implements MultiKey {
         } else {
             return dateCompare;
         }
-    }
-
-    @Override
-    public String getKey1() {
-        return _id;
-    }
-
-    @Override
-    public Object getKey2() {
-        return email;
     }
 
     @Override

@@ -9,11 +9,8 @@ import junit.framework.TestSuite;
 
 import java.io.FileReader;
 
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import jdk.nashorn.api.scripting.JSObject;
 
 /**
  * Unit test for simple App.
